@@ -1,8 +1,5 @@
 from chessdotcom import get_player_profile, get_player_game_archives, get_player_games_by_month, get_player_stats,get_player_tournaments
 from datetime import datetime
-import pprint
-
-printer = pprint.PrettyPrinter()
 
 def timestamp_to_date(timestamp):
     """
@@ -46,89 +43,48 @@ def tournament_info(player):
 
 def player_rank(player):
     """
-    Return 2 table with the ranks information of the player name in entry
+    Return 3 lists with the ranks information of the player name in entry
     ---
-    best = [chess_blitz, chess_bullet, chess_daily, chess_rapid, puzzle_rush, tactics]
-    current = [chess_blitz, chess_bullet, chess_daily, chess_rapid, puzzle_rush, tactics]
+    best = [chess_blitz, chess_bullet, chess_daily, chess_rapid]
+    current = [chess_blitz, chess_bullet, chess_rapid, chess_daily]
+    ratio = [chess_blitz, chess_bullet, chess_rapid, chess_daily]
     """
-    pass
+    request = get_player_stats(player).json["stats"]
+    best = []
+    current = []
+    ratio = []
+    # blitz
+    blitz = request["chess_blitz"]
+    best.append(blitz["best"]["rating"])
+    current.append(blitz["last"]["rating"])
+    ratio.append(round(blitz["record"]["win"]/blitz["record"]["loss"],2))
+    #bullet
+    bullet = request["chess_bullet"]
+    best.append(bullet["best"]["rating"])
+    current.append(bullet["last"]["rating"])
+    ratio.append(round(bullet["record"]["win"]/bullet["record"]["loss"],2))
+    #rapid
+    rapid = request["chess_rapid"]
+    best.append(rapid["best"]["rating"])
+    current.append(rapid["last"]["rating"])
+    ratio.append(round(rapid["record"]["win"]/rapid["record"]["loss"],2))  
+    #daily
+    daily = request["chess_daily"]
+    best.append(daily["best"]["rating"])
+    current.append(daily["last"]["rating"])
+    ratio.append(round(daily["record"]["win"]/daily["record"]["loss"],2))  
+    return best, current, ratio
 
 if __name__ == "__main__":
-    #response = get_player_profile(input("Player name: "))
-    response = get_player_profile("BaguettedeFromage").json["player"]
-    #print(response)
-    printer.pprint(response)
-    #print(profile_info("BaguettedeFromage"))
-    #print(tournament_info("BaguettedeFromage"))
+    #username = input("Player name: ")
+    username = "BaguettedeFromage"
+    profile = profile_info("BaguettedeFromage")
+    tournaments = tournament_info("BaguettedeFromage")
+    best_rank, rank, ratio =player_rank("BaguettedeFromage")
+    print("Username: ",username)
+    print("profile: ",profile)
+    print("tournaments: ",tournaments)
+    print("best_rank: ",best_rank)
+    print("rank: ",rank)        
+    print("ratio: ",ratio)
 
-
-
-"""
-get_player_stats
----
-{'stats': {'chess_blitz': {'best': {'date': 1672946853,
-                                    'game': 'https://www.chess.com/game/live/65721220887',
-                                    'rating': 865},
-                           'last': {'date': 1676546595,
-                                    'rating': 817,
-                                    'rd': 74},
-                           'record': {'draw': 7, 'loss': 51, 'win': 71}},
-           'chess_bullet': {'best': {'date': 1616682328,
-                                     'game': 'https://www.chess.com/game/live/10321713177',
-                                     'rating': 742},
-                            'last': {'date': 1676747490,
-                                     'rating': 657,
-                                     'rd': 87},
-                            'record': {'draw': 0, 'loss': 36, 'win': 36}},
-           'chess_daily': {'best': {'date': 1613499745,
-                                    'game': 'https://www.chess.com/game/daily/312098816',
-                                    'rating': 939},
-                           'last': {'date': 1675118329,
-                                    'rating': 593,
-                                    'rd': 156},
-                           'record': {'draw': 0,
-                                      'loss': 35,
-                                      'time_per_move': 10485,
-                                      'timeout_percent': 0,
-                                      'win': 9}},
-           'chess_rapid': {'best': {'date': 1671985236,
-                                    'game': 'https://www.chess.com/game/live/65703738939',
-                                    'rating': 1072},
-                           'last': {'date': 1676748572,
-                                    'rating': 990,
-                                    'rd': 51},
-                           'record': {'draw': 19, 'loss': 159, 'win': 202}},
-           'puzzle_rush': {'best': {'score': 15, 'total_attempts': 18}},
-           'tactics': {'highest': {'date': 1676723429, 'rating': 1670},
-                       'lowest': {'date': 1608311624, 'rating': 412}}}}
-"""
-
-
-
-
-"""
-get_player_game_archives(name)
----
-{'archives': ['https://api.chess.com/pub/player/baguettedefromage/games/2020/11',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2020/12',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/01',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/02',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/03',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/04',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/05',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/06',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/07',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/09',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/10',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2021/12',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2022/08',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2022/12',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2023/01',
-              'https://api.chess.com/pub/player/baguettedefromage/games/2023/02']}
-"""
-
-
-"""
-get_player_games_by_month(name,year,mounth)
----
-"""
